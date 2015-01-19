@@ -47,6 +47,11 @@ class File
 
             if (is_array($token)) {
                 switch ($token[0]) {
+                    case T_DOLLAR_OPEN_CURLY_BRACES:
+                    case T_CURLY_OPEN:
+                        ++$scope;
+
+                        break;
                     case T_NAMESPACE;
 
                         $namespace = '';
@@ -88,6 +93,8 @@ class File
 
                         $functionName = $this->tokens[$i + 2][1];
 
+                        //var_dump($functionName, $currentClass);
+
                         if ($currentClass) {
                             $functions[$i] = new Func(new \ReflectionMethod($currentClass, $functionName), $this, $i);
                         } else {
@@ -105,8 +112,7 @@ class File
             } else {
                 if ($token == '{') {
                     ++$scope;
-                }
-                if ($token == '}') {
+                } else if ($token == '}') {
                     --$scope;
                 }
 
@@ -122,7 +128,7 @@ class File
         return $this->functions;
     }
 
-    public function write()
+    public function getCode()
     {
         $out = '';
 
@@ -134,9 +140,8 @@ class File
             }
         }
 
-        file_put_contents(str_replace('/src/', '/src2/', $this->fileName), $out);
+        return $out;
     }
-
 
     /**
      * @return array

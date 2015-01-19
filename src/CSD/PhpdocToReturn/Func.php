@@ -1,11 +1,12 @@
 <?php
 namespace CSD\PhpdocToReturn;
 
-use CSD\PhpdocToReturn\ReturnType\Parser;
-
 class Func
 {
-    private $returnType = null;
+    /**
+     * @var ReturnDeclaration
+     */
+    private $returnDeclaration = null;
 
     /**
      * @var \ReflectionFunctionAbstract
@@ -18,6 +19,11 @@ class Func
     private $file;
 
     /**
+     * @var Parser
+     */
+    private $parser;
+
+    /**
      * @param \ReflectionFunctionAbstract $reflection
      * @param File                        $file
      */
@@ -25,31 +31,27 @@ class Func
     {
         $this->reflection = $reflection;
         $this->file = $file;
+        $this->parser = new Parser;
     }
 
     /**
-     * @return ReturnType\ReturnTypeInterface
+     * @return ReturnDeclaration|false
      */
-    public function getReturnType()
+    public function getReturnDeclaration()
     {
-        if (null === $this->returnType) {
-            $docComment = $this->reflection->getDocComment();
-
-            // no comment at all
-            if ($docComment && preg_match('/\*\s*@return\s([^\s]+)/', $docComment, $matches)) {
-                $parser = new Parser;
-                $this->returnType = $parser->parse($matches[1]);
-            } else {
-                $this->returnType = false;
-            }
+        if (null === $this->returnDeclaration) {
+            $this->returnDeclaration = $this->parser->parseDocComment($this->reflection);
         }
 
-        return $this->returnType;
+        return $this->returnDeclaration;
     }
 
+    /**
+     * @return bool
+     */
     public function hasReturnDoc()
     {
-        return (bool) $this->getReturnType();
+        return (bool) $this->getReturnDeclaration();
     }
 
     /**
@@ -58,17 +60,6 @@ class Func
     public function getReflection()
     {
         return $this->reflection;
-    }
-
-    /**
-     * @param \ReflectionFunctionAbstract $reflection
-     *
-     * @return $this
-     */
-    public function setReflection($reflection)
-    {
-        $this->reflection = $reflection;
-        return $this;
     }
 
     /**

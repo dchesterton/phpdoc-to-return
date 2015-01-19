@@ -2,16 +2,8 @@
 
 namespace CSD\PhpdocToReturn\ReturnType;
 
-class ThisType implements ReturnTypeInterface
+class ThisType extends SelfType
 {
-    /**
-     * @return string
-     */
-    public function getDeclaration()
-    {
-        return 'self';
-    }
-
     /**
      * @return bool
      */

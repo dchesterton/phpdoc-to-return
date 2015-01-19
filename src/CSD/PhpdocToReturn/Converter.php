@@ -5,11 +5,31 @@ use CSD\PhpdocToReturn\ReturnType\ArrayType;
 
 class Converter
 {
+    /**
+     * @var bool
+     */
     private $writeObjectArrayReturnType = true;
+
+    /**
+     * @var bool
+     */
+    private $removeRedundantDocComments = true;
 
     public function shouldWriteReturnType(Func $function)
     {
-        $type = $function->getReturnType();
+        $name = $function->getReflection()->getName();
+
+        if ($function->getReflection() instanceof \ReflectionMethod && in_array($name, ['__construct', '__destruct', '__clone'])) {
+            return false;
+        }
+
+        $declaration = $function->getReturnDeclaration();
+
+        if (!$declaration) {
+            return false;
+        }
+
+        $type = $declaration->getType();
 
         if ($type && $type->getDeclaration()) {
             if ($type instanceof ArrayType && $type->getType()) {
@@ -22,14 +42,26 @@ class Converter
         return false;
     }
 
-    public function convert(Func $function)
+    public function convert(File $file)
+    {
+        foreach ($file->getFunctions() as $function) {
+            $this->convertFunction($function);
+        }
+    }
+
+    private function convertFunction(Func $function)
     {
         if (!$this->shouldWriteReturnType($function)) {
             return false;
         }
 
-        $returnType = $function->getReturnType();
+        $returnDeclaration = $function->getReturnDeclaration();
 
+        if (!$returnDeclaration) {
+            return false;
+        }
+
+        $returnType = $returnDeclaration->getType();
         $declaration = ': ' . $returnType->getDeclaration();
 
         $file = $function->getFile();
@@ -51,12 +83,14 @@ class Converter
             }
         }
 
-        if ($returnType->isDocCommentRedundant()) {
+        // remove doc comment if it's now redundant
+        if (!$returnDeclaration->getComment() && $this->removeRedundantDocComments && $returnType->isDocCommentRedundant()) {
+            // work backwards from start of function and try and find the doc comment
             for ($i = $startToken - 1; $i >= 0; $i--) {
-
                 $token = $tokens[$i];
 
                 if (is_array($token)) {
+                    // todo: test return by reference
                     if (in_array($token[0], [T_WHITESPACE, T_PUBLIC, T_PROTECTED, T_PRIVATE, T_ABSTRACT, T_FINAL])) {
                         continue;
                     }
@@ -64,6 +98,7 @@ class Converter
                     if ($token[0] == T_DOC_COMMENT) {
                         $token[1] = preg_replace('/\n\s*\*\s*@return\s.*/im', '', $token[1]);
 
+                        // remove empty doc comments
                         if (preg_match('#^/\*\*[\s|\*]*\*/$#', $token[1])) {
                             $token[1] = '';
                         }
@@ -75,36 +110,6 @@ class Converter
                 }
             }
         }
-
-
-        //$tokens = $file->getTokens();
-
-
-
-
-
-        /*
-        $contents = file_get_contents($function->getReflection()->getFileName());
-
-        $name = $function->getReflection()->getName();
-        $declaration = $function->getReturnType()->getDeclaration();
-
-        $pattern = '/(' . preg_quote($name) . '\(.*\))(\s*)\{/m';
-
-        $replacement = '$1: ' . preg_quote($declaration) . '$2{';
-
-        $contents = preg_replace($pattern, $replacement, $contents);
-
-
-        var_dump('Adding hint for method: ' . $function->getReflection()->getName());
-        var_dump($contents);
-
-
-
-
-        //$declaration = 'function ' . $function->getReflection()->getName() . ': ';
-        */
-
     }
 
     /**
@@ -123,6 +128,25 @@ class Converter
     public function setWriteObjectArrayReturnType($writeObjectArrayReturnType)
     {
         $this->writeObjectArrayReturnType = $writeObjectArrayReturnType;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getRemoveRedundantDocComments()
+    {
+        return $this->removeRedundantDocComments;
+    }
+
+    /**
+     * @param boolean $removeRedundantDocComments
+     *
+     * @return $this
+     */
+    public function setRemoveRedundantDocComments($removeRedundantDocComments)
+    {
+        $this->removeRedundantDocComments = $removeRedundantDocComments;
         return $this;
     }
 }

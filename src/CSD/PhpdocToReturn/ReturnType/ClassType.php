@@ -9,6 +9,9 @@ class ClassType implements ReturnTypeInterface
      */
     private $className;
 
+    /**
+     * @param string $className
+     */
     public function __construct($className)
     {
         $this->className = $className;
