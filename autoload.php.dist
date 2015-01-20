@@ -15,5 +15,5 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 }
 
 /* @var $classLoader \Composer\Autoload\ClassLoader */
-$classLoader->add('CSD\\PhpdocToReturn\\Tests\\', __DIR__ . '/tests');
+$classLoader->add('CSD\\PhpDocToReturn\\Tests\\', __DIR__ . '/tests');
 unset($classLoader);
