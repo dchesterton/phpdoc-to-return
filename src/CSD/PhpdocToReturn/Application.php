@@ -42,11 +42,6 @@ class Application
     /**
      * @var bool
      */
-    private $writeObjectArrayReturnType = true;
-
-    /**
-     * @var bool
-     */
     private $removeRedundantDocComments = true;
 
     /**
@@ -87,41 +82,17 @@ class Application
     }
 
     /**
-     * @param bool $writeObjectArrayReturnType
-     *
-     * @return $this
-     */
-    public function setWriteObjectArrayReturnType($writeObjectArrayReturnType)
-    {
-        $this->writeObjectArrayReturnType = $writeObjectArrayReturnType;
-        return $this;
-    }
-
-    /**
-     * @param bool $removeRedundantDocComments
-     *
-     * @return $this
-     */
-    public function setRemoveRedundantDocComments($removeRedundantDocComments)
-    {
-        $this->removeRedundantDocComments = $removeRedundantDocComments;
-        return $this;
-    }
-
-    /**
      * Run the application to convert files.
      */
     public function run()
     {
         $converter = new Converter;
-        $converter->setRemoveRedundantDocComments($this->removeRedundantDocComments);
-        $converter->setWriteObjectArrayReturnType($this->writeObjectArrayReturnType);
 
         foreach ($this->getIterator() as $fileinfo) {
             $fileName = $fileinfo[0];
 
             $file = new File($fileName);
-            $converter->convert($file);
+            $converter->convert($file, false);
 
             if (0 === strpos($fileName, $this->sourceFolder)) {
                 $path = substr($fileName, strlen($this->sourceFolder));

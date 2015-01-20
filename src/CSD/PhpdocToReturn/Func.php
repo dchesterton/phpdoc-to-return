@@ -7,9 +7,9 @@ namespace CSD\PhpdocToReturn;
 class Func
 {
     /**
-     * @var ReturnDeclaration
+     * @var ReturnComment
      */
-    private $returnDeclaration = null;
+    private $returnComment = null;
 
     /**
      * @var \ReflectionFunctionAbstract
@@ -38,15 +38,15 @@ class Func
     }
 
     /**
-     * @return ReturnDeclaration|false
+     * @return ReturnComment|false
      */
-    public function getReturnDeclaration()
+    public function getReturnComment()
     {
-        if (null === $this->returnDeclaration) {
-            $this->returnDeclaration = $this->parser->parseDocComment($this->reflection);
+        if (null === $this->returnComment) {
+            $this->returnComment = $this->parser->parseDocComment($this->reflection);
         }
 
-        return $this->returnDeclaration;
+        return $this->returnComment;
     }
 
     /**

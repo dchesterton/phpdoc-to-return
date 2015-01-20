@@ -47,7 +47,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ArrayType', $decl->getType());
 
         /** @var \CSD\PhpdocToReturn\ReturnType\ArrayType $type */
@@ -65,7 +65,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ArrayType', $decl->getType());
 
         /** @var \CSD\PhpdocToReturn\ReturnType\ArrayType $type */
@@ -83,7 +83,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
         $this->assertEmpty($decl->getComment());
     }
@@ -100,7 +100,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\CallableType', $decl->getType());
     }
 
@@ -118,7 +118,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
             $decl = $this->parser->parseDocComment($reflection);
 
-            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
             $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ScalarType', $decl->getType());
 
             $this->assertEquals($scalar, $decl->getType()->getScalar());
@@ -132,7 +132,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
             $decl = $this->parser->parseDocComment($reflection);
 
-            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
             $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ScalarType', $decl->getType());
         }
     }
@@ -144,7 +144,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
             $decl = $this->parser->parseDocComment($reflection);
 
-            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
             $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ScalarType', $decl->getType());
             $this->assertEquals('int', $decl->getType()->getScalar());
         }
@@ -170,7 +170,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
         $this->assertEmpty($decl->getComment());
     }
@@ -181,7 +181,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
         $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
         $this->assertEquals('The current date and time', $decl->getComment());
@@ -193,7 +193,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
         $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
         $this->assertEquals('The current date and time', $decl->getComment());
@@ -205,7 +205,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
         $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
         $this->assertEquals('The current date and time', $decl->getComment());
@@ -238,7 +238,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ScalarType', $decl->getType());
         $this->assertEquals('int', $decl->getType()->getScalar());
     }
@@ -249,7 +249,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ThisType', $decl->getType());
         $this->assertEquals('self', $decl->getType()->getDeclaration(false));
         $this->assertEquals('this', $decl->getType()->getDeclaration(true));
@@ -261,7 +261,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\SelfType', $decl->getType());
     }
 
@@ -278,7 +278,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
         $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
     }
@@ -289,7 +289,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
         $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
     }
@@ -307,7 +307,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $decl = $this->parser->parseDocComment($reflection);
 
-        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnComment', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
         $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
     }

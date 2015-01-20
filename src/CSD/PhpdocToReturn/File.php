@@ -31,12 +31,12 @@ class File
     }
 
     /**
-     * @return Func[] An array of functions
+     *
      */
-    public function getFunctions()
+    public function parse()
     {
-        if ($this->functions) {
-            return $this->functions;
+        if (null !== $this->functions) {
+            return;
         }
 
         $currentClass = null;
@@ -67,11 +67,9 @@ class File
                                 break;
                             }
 
-                            if (is_array($this->tokens[$j]) && T_WHITESPACE === $this->tokens[$j][0]) {
-                                continue;
+                            if (T_WHITESPACE !== $this->tokens[$j][0]) {
+                                $namespace .= $this->tokens[$j][1];
                             }
-
-                            $namespace .= $this->tokens[$j][1];
                         }
 
                         $currentNamespace = $namespace;
@@ -97,7 +95,14 @@ class File
                             break;
                         }
 
-                        $functionName = $this->tokens[$i + 2][1];
+                        $functionName = null;
+
+                        for ($j = $i; $j < $count; $j++) {
+                            if (is_array($this->tokens[$j]) && $this->tokens[$j][0] == T_STRING) {
+                                $functionName = $this->tokens[$j][1];
+                                break;
+                            }
+                        }
 
                         if ($currentClass) {
                             $functions[$i] = new Func(new \ReflectionMethod($currentClass, $functionName), $this);
@@ -123,7 +128,14 @@ class File
         }
 
         $this->functions = $functions;
+    }
 
+    /**
+     * @return Func[] An array of functions
+     */
+    public function getFunctions()
+    {
+        $this->parse();
         return $this->functions;
     }
 
@@ -159,6 +171,8 @@ class File
      */
     public function insertToken($token, $pos)
     {
+        $this->parse();
+
         array_splice($this->tokens, $pos, 0, $token);
 
         foreach ($this->functions as $tokenPos => $function) {
@@ -185,6 +199,8 @@ class File
      */
     public function getStartTokenForFunction(Func $func)
     {
+        $this->parse();
+
         return array_search($func, $this->functions);
     }
 }

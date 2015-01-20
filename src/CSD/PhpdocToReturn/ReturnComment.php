@@ -6,7 +6,7 @@ use CSD\PhpdocToReturn\ReturnType\ReturnTypeInterface;
 /**
  * @author Daniel Chesterton <daniel@chestertondevelopment.com>
  */
-class ReturnDeclaration
+class ReturnComment
 {
     /**
      * @var ReturnTypeInterface

@@ -1,34 +1,18 @@
 <?php
 namespace CSD\PhpdocToReturn;
 
-use CSD\PhpdocToReturn\ReturnType\ArrayType;
-
 /**
  * @author Daniel Chesterton <daniel@chestertondevelopment.com>
  */
 class Converter
 {
     /**
-     * @var bool
-     */
-    private $writeObjectArrayReturnType = true;
-
-    /**
-     * @var bool
-     */
-    private $removeRedundantDocComments = true;
-
-    /**
-     * @var bool
-     */
-    private $hack = false;
-
-    /**
      * @param Func $function
+     * @param bool $hack
      *
      * @return bool
      */
-    public function shouldWriteReturnType(Func $function)
+    private function shouldWriteReturnType(Func $function, $hack)
     {
         $name = $function->getReflection()->getName();
 
@@ -36,55 +20,40 @@ class Converter
             return false;
         }
 
-        $declaration = $function->getReturnDeclaration();
+        $comment = $function->getReturnComment();
 
-        if (!$declaration) {
+        if (!$comment) {
             return false;
         }
 
-        $type = $declaration->getType();
-
-        if ($type && $type->getDeclaration($this->hack)) {
-            if ($type instanceof ArrayType && $type->getType()) {
-                return $this->writeObjectArrayReturnType;
-            }
-
-            return true;
-        }
-
-        return false;
+        return ($comment->getType() && $comment->getType()->getDeclaration($hack));
     }
 
     /**
      * @param File $file
+     * @param bool $hack
      */
-    public function convert(File $file)
+    public function convert(File $file, $hack)
     {
         foreach ($file->getFunctions() as $function) {
-            $this->convertFunction($function);
+            $this->convertFunction($function, $hack);
         }
     }
 
     /**
      * @param Func $function
+     * @param bool $hack
      */
-    private function convertFunction(Func $function)
+    private function convertFunction(Func $function, $hack)
     {
-        if (!$this->shouldWriteReturnType($function)) {
+        if (!$this->shouldWriteReturnType($function, $hack)) {
             return;
         }
 
-        $returnDeclaration = $function->getReturnDeclaration();
+        $returnComment = $function->getReturnComment();
+        $returnType = $returnComment->getType();
 
-        $returnType = $returnDeclaration->getType();
-
-        $declaration = $returnType->getDeclaration($this->hack);
-
-        if (!$declaration) {
-            return;
-        }
-
-        $declaration = ': ' . $declaration;
+        $declaration = ': ' . $returnType->getDeclaration($hack);
 
         $file = $function->getFile();
 
@@ -106,23 +75,30 @@ class Converter
         }
 
         // remove doc comment if it's now redundant
-        if (!$returnDeclaration->getComment() && $this->removeRedundantDocComments && $returnType->isDocCommentRedundant()) {
+        if (!$returnComment->getComment() && $returnType->isDocCommentRedundant()) {
             // work backwards from start of function and try and find the doc comment
             for ($i = $startToken - 1; $i >= 0; $i--) {
                 $token = $tokens[$i];
 
                 if (is_array($token)) {
-                    // todo: test return by reference
-                    if (in_array($token[0], [T_WHITESPACE, T_PUBLIC, T_PROTECTED, T_PRIVATE, T_ABSTRACT, T_FINAL])) {
+                    if (in_array($token[0], [T_WHITESPACE, T_PUBLIC, T_PROTECTED, T_PRIVATE, T_ABSTRACT, T_FINAL, T_STATIC])) {
                         continue;
                     }
 
                     if ($token[0] == T_DOC_COMMENT) {
-                        $token[1] = preg_replace('/\n\s*\*\s*@return\s.*/im', '', $token[1]);
+                        $token[1] = preg_replace('/[\s\*]*@return\s.*/im', '', $token[1]);
 
                         // remove empty doc comments
-                        if (preg_match('#^/\*\*[\s|\*]*\*/$#', $token[1])) {
+                        if (preg_match('#^[\s\*\/\\\\]*$#', $token[1])) {
                             $token[1] = '';
+
+                            // remove any excess whitespace
+                            $nextToken = $tokens[$i + 1];
+
+                            if (is_array($nextToken) && $nextToken[0] == T_WHITESPACE) {
+                                $nextToken[1] = '';
+                                $file->replaceToken($nextToken, $i + 1);
+                            }
                         }
 
                         $file->replaceToken($token, $i);
@@ -132,62 +108,5 @@ class Converter
                 }
             }
         }
-    }
-
-    /**
-     * @return bool
-     */
-    public function getWriteObjectArrayReturnType()
-    {
-        return $this->writeObjectArrayReturnType;
-    }
-
-    /**
-     * @param bool $writeObjectArrayReturnType
-     *
-     * @return $this
-     */
-    public function setWriteObjectArrayReturnType($writeObjectArrayReturnType)
-    {
-        $this->writeObjectArrayReturnType = $writeObjectArrayReturnType;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getRemoveRedundantDocComments()
-    {
-        return $this->removeRedundantDocComments;
-    }
-
-    /**
-     * @param bool $removeRedundantDocComments
-     *
-     * @return $this
-     */
-    public function setRemoveRedundantDocComments($removeRedundantDocComments)
-    {
-        $this->removeRedundantDocComments = $removeRedundantDocComments;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getHack()
-    {
-        return $this->hack;
-    }
-
-    /**
-     * @param bool $hack
-     *
-     * @return $this
-     */
-    public function setHack($hack)
-    {
-        $this->hack = $hack;
-        return $this;
     }
 }

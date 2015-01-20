@@ -9,7 +9,7 @@ class Parser
     /**
      * @param \ReflectionFunctionAbstract $function
      *
-     * @return ReturnDeclaration|false
+     * @return ReturnComment|false
      */
     public function parseDocComment(\ReflectionFunctionAbstract $function)
     {
@@ -44,7 +44,7 @@ class Parser
      * @param \ReflectionClass $class
      * @param string           $method
      *
-     * @return bool|ReturnDeclaration
+     * @return bool|ReturnComment
      */
     private function parseClassMethod(\ReflectionClass $class, $method)
     {
@@ -59,7 +59,7 @@ class Parser
      * @param string $returnString
      * @param \ReflectionFunctionAbstract $function
      *
-     * @return ReturnDeclaration|false
+     * @return ReturnComment|false
      */
     private function parseReturnString($returnString, \ReflectionFunctionAbstract $function)
     {
@@ -71,15 +71,15 @@ class Parser
         $comment = implode(' ', $parts);
 
         if (in_array($type, ['int', 'integer'])) {
-            return new ReturnDeclaration(new ReturnType\ScalarType('int'), $comment);
+            return new ReturnComment(new ReturnType\ScalarType('int'), $comment);
         }
 
         if (in_array($type, ['string', 'mixed', 'void', 'float', 'resource'])) {
-            return new ReturnDeclaration(new ReturnType\ScalarType($type), $comment);
+            return new ReturnComment(new ReturnType\ScalarType($type), $comment);
         }
 
         if (in_array($type, ['bool', 'boolean', 'true', 'false'])) {
-            return new ReturnDeclaration(new ReturnType\ScalarType('bool'), $comment);
+            return new ReturnComment(new ReturnType\ScalarType('bool'), $comment);
         }
 
         // unsupported types, todo: check if supported in Hack?
@@ -88,22 +88,22 @@ class Parser
         }
 
         if ('array' == $type) {
-            return new ReturnDeclaration(new ReturnType\ArrayType, $comment);
+            return new ReturnComment(new ReturnType\ArrayType, $comment);
         }
 
         if ('callable' == $type) {
-            return new ReturnDeclaration(new ReturnType\CallableType, $comment);
+            return new ReturnComment(new ReturnType\CallableType, $comment);
         }
 
         if ('$this' == $type) {
             if ($function instanceof \ReflectionMethod) {
-                return new ReturnDeclaration(new ReturnType\ThisType, $comment);
+                return new ReturnComment(new ReturnType\ThisType, $comment);
             }
             return false; // shouldn't have functions with @return $this, but bail out if we do
         }
 
         if ('self' == $type) {
-            return new ReturnDeclaration(new ReturnType\SelfType, $comment);
+            return new ReturnComment(new ReturnType\SelfType, $comment);
         }
 
         // cannot support multiple return types
@@ -116,9 +116,9 @@ class Parser
         if ('[]' === substr($type, -2)) {
             $object = substr($type, 0, strlen($type) - 2);
 
-            return new ReturnDeclaration(new ReturnType\ArrayType($object), $comment);
+            return new ReturnComment(new ReturnType\ArrayType($object), $comment);
         }
 
-        return new ReturnDeclaration(new ReturnType\ClassType($type), $comment);
+        return new ReturnComment(new ReturnType\ClassType($type), $comment);
     }
 }
