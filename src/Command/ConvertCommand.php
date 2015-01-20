@@ -22,6 +22,7 @@ class ConvertCommand extends Command
             ->setName('convert')
             ->addOption('src', 's', InputOption::VALUE_REQUIRED, 'The source directory, defaults to current working directory')
             ->addOption('dest', 'd', InputOption::VALUE_REQUIRED, 'The destination directory, defaults to overwrite source directory')
+            ->addOption('hack', null, InputOption::VALUE_NONE, 'Whether to convert to Hack syntax')
             ->addOption('remove-comments', 'r', InputOption::VALUE_REQUIRED, 'Remove redundant @return doc comments?', true)
             ->addOption('dry-run')
         ;
@@ -59,6 +60,6 @@ class ConvertCommand extends Command
         }
 
         $app = new App($src, $dest);
-        $app->run();
+        $app->run($input->getOption('hack'));
     }
 }

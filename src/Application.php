@@ -56,8 +56,10 @@ class Application
 
     /**
      * Run the application to convert files.
+     *
+     * @param bool $hack
      */
-    public function run()
+    public function run($hack)
     {
         $converter = new Converter;
 
@@ -65,7 +67,7 @@ class Application
             $fileName = $fileinfo[0];
 
             $file = new File($fileName);
-            $converter->convert($file, false);
+            $converter->convert($file, $hack);
 
             if (0 === strpos($fileName, $this->sourceFolder)) {
                 $path = substr($fileName, strlen($this->sourceFolder));
