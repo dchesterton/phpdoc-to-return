@@ -9,7 +9,9 @@
         }
     ],
     "autoload": {
-        "psr-0": { "": "src/" }
+        "psr-4": {
+            "CSD\\PhpDocToReturn\\": "src/"
+        }
     },
     "require": {
         "php": ">=5.4",
