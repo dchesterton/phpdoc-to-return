@@ -4,6 +4,10 @@ namespace CSD\PhpDocToReturn\Tests;
 use CSD\PhpDocToReturn\Converter;
 use CSD\PhpDocToReturn\File;
 
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
 class ConverterTest extends \PHPUnit_Framework_TestCase
 {
     public function getFiles()

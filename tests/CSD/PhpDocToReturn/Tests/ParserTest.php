@@ -3,6 +3,10 @@ namespace CSD\PhpDocToReturn\Tests;
 
 use CSD\PhpDocToReturn\Parser;
 
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
 class ParserTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -10,6 +14,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      */
     private $parser;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setUp()
     {
         $this->parser = new Parser;
