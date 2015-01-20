@@ -40,11 +40,6 @@ class Application
     private $destinationFolder;
 
     /**
-     * @var bool
-     */
-    private $removeRedundantDocComments = true;
-
-    /**
      * @param $source
      * @param $destination
      */
