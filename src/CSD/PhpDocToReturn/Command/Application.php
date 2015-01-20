@@ -6,15 +6,12 @@ use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 class Application extends ConsoleApplication
 {
     /**
-     * Gets the name of the command based on input.
-     *
-     * @param InputInterface $input The input interface
-     *
-     * @return string The command name
+     * {@inheritdoc}
      */
     protected function getCommandName(InputInterface $input)
     {
@@ -22,9 +19,7 @@ class Application extends ConsoleApplication
     }
 
     /**
-     * Gets the default commands that should always be available.
-     *
-     * @return array An array of default Command instances
+     * {@inheritdoc}
      */
     protected function getDefaultCommands()
     {
@@ -37,8 +32,7 @@ class Application extends ConsoleApplication
     }
 
     /**
-     * Overridden so that the application doesn't expect the command
-     * name to be the first argument.
+     * {@inheritdoc}
      */
     public function getDefinition()
     {

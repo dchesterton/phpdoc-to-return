@@ -3,6 +3,7 @@ namespace CSD\PhpDocToReturn;
 
 /**
  * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 class Func
 {
@@ -58,7 +59,7 @@ class Func
     }
 
     /**
-     * @return \CSD\PhpDocToReturn\File
+     * @return File
      */
     public function getFile()
     {

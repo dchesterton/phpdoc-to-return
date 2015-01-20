@@ -5,6 +5,7 @@ use CSD\PhpDocToReturn\ReturnType\ReturnTypeInterface;
 
 /**
  * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 class ReturnComment
 {

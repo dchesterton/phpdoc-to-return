@@ -3,11 +3,12 @@ namespace CSD\PhpDocToReturn\ReturnType;
 
 /**
  * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 interface ReturnTypeInterface
 {
     /**
-     * Return the PHP Return Type code.
+     * Return the PHP code.
      *
      * @param bool $hack
      *

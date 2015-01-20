@@ -3,6 +3,7 @@ namespace CSD\PhpDocToReturn;
 
 /**
  * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 class Parser
 {
@@ -44,7 +45,7 @@ class Parser
      * @param \ReflectionClass $class
      * @param string           $method
      *
-     * @return bool|ReturnComment
+     * @return ReturnComment|false
      */
     private function parseClassMethod(\ReflectionClass $class, $method)
     {
