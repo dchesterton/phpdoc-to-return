@@ -4,6 +4,9 @@ namespace CSD\PhpdocToReturn\Command;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Input\InputInterface;
 
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ */
 class Application extends ConsoleApplication
 {
     /**
@@ -15,7 +18,6 @@ class Application extends ConsoleApplication
      */
     protected function getCommandName(InputInterface $input)
     {
-        // This should return the name of your command.
         return 'convert';
     }
 

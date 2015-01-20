@@ -1,6 +1,9 @@
 <?php
 namespace CSD\PhpdocToReturn;
 
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ */
 class File
 {
     /**
@@ -13,6 +16,9 @@ class File
      */
     private $fileName;
 
+    /**
+     * @var Func[]
+     */
     private $functions;
 
     /**
@@ -93,20 +99,13 @@ class File
 
                         $functionName = $this->tokens[$i + 2][1];
 
-                        //var_dump($functionName, $currentClass);
-
                         if ($currentClass) {
-                            $functions[$i] = new Func(new \ReflectionMethod($currentClass, $functionName), $this, $i);
+                            $functions[$i] = new Func(new \ReflectionMethod($currentClass, $functionName), $this);
                         } else {
                             $fqn = $currentNamespace . '\\' . $functionName;
-                            $functions[$i] = new Func(new \ReflectionFunction($fqn), $this, $i);
+                            $functions[$i] = new Func(new \ReflectionFunction($fqn), $this);
                         }
 
-                        break;
-
-                    default:
-
-                        //var_dump(token_name($token[2]));
                         break;
                 }
             } else {
@@ -128,6 +127,9 @@ class File
         return $this->functions;
     }
 
+    /**
+     * @return string
+     */
     public function getCode()
     {
         $out = '';
@@ -151,6 +153,10 @@ class File
         return $this->tokens;
     }
 
+    /**
+     * @param mixed $token
+     * @param int   $pos
+     */
     public function insertToken($token, $pos)
     {
         array_splice($this->tokens, $pos, 0, $token);
@@ -163,6 +169,10 @@ class File
         }
     }
 
+    /**
+     * @param mixed $token
+     * @param int   $pos
+     */
     public function replaceToken($token, $pos)
     {
         $this->tokens[$pos] = $token;

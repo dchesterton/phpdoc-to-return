@@ -1,6 +1,9 @@
 <?php
 namespace CSD\PhpdocToReturn;
 
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ */
 class Parser
 {
     /**
@@ -18,7 +21,7 @@ class Parser
 
         if (preg_match('/\*\s*@return\s(.*)/i', $docComment, $matches)) {
             return $this->parseReturnString($matches[1], $function);
-        } elseif ($function instanceof \ReflectionMethod && preg_match('/\{@inheritdoc\}/i', $docComment, $matches)) {
+        } elseif ($function instanceof \ReflectionMethod && false !== strpos($docComment, '{@inheritdoc}')) {
             /** @var \ReflectionMethod $function */
             $class = $function->getDeclaringClass();
 
@@ -31,35 +34,25 @@ class Parser
             }
 
             if ($parent = $class->getParentClass()) {
-                $result = $this->parseClassMethod($parent, $function->getName());
-
-                if (false !== $result) {
-                    return $result;
-                }
+                return $this->parseClassMethod($parent, $function->getName());
             }
         }
         return false;
     }
 
+    /**
+     * @param \ReflectionClass $class
+     * @param string           $method
+     *
+     * @return bool|ReturnDeclaration
+     */
     private function parseClassMethod(\ReflectionClass $class, $method)
     {
         if ($class->hasMethod($method)) {
-            $result = $this->parseDocComment($class->getMethod($method));
-
-            if ($result) {
-                return $result;
-            }
+            return $this->parseDocComment($class->getMethod($method));
         }
 
         return false;
-    }
-
-    private function isUnsupported($string)
-    {
-        return in_array($string, [
-            'string', 'int', 'integer', 'float', 'bool', 'boolean', 'resource', 'null',
-            'true', 'false', 'void', 'null', 'mixed', 'object'
-        ]);
     }
 
     /**
@@ -77,7 +70,20 @@ class Parser
 
         $comment = implode(' ', $parts);
 
-        if ($this->isUnsupported($type)) {
+        if (in_array($type, ['int', 'integer'])) {
+            return new ReturnDeclaration(new ReturnType\ScalarType('int'), $comment);
+        }
+
+        if (in_array($type, ['string', 'mixed', 'void', 'float', 'resource'])) {
+            return new ReturnDeclaration(new ReturnType\ScalarType($type), $comment);
+        }
+
+        if (in_array($type, ['bool', 'boolean', 'true', 'false'])) {
+            return new ReturnDeclaration(new ReturnType\ScalarType('bool'), $comment);
+        }
+
+        // unsupported types, todo: check if supported in Hack?
+        if (in_array($type, ['null', 'object'])) {
             return false;
         }
 
@@ -102,6 +108,7 @@ class Parser
 
         // cannot support multiple return types
         if (false !== strpos($type, '|')) {
+            // todo: check for string|null, \DateTime|null etc. and add support for Hack nullable types
             return false;
         }
 
@@ -111,7 +118,6 @@ class Parser
 
             return new ReturnDeclaration(new ReturnType\ArrayType($object), $comment);
         }
-
 
         return new ReturnDeclaration(new ReturnType\ClassType($type), $comment);
     }

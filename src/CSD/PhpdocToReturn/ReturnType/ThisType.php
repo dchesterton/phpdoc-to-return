@@ -1,11 +1,21 @@
 <?php
-
 namespace CSD\PhpdocToReturn\ReturnType;
 
-class ThisType extends SelfType
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ */
+class ThisType implements ReturnTypeInterface
 {
     /**
-     * @return bool
+     * {@inheritdoc}
+     */
+    public function getDeclaration($hack)
+    {
+        return $hack? 'this': 'self';
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function isDocCommentRedundant()
     {

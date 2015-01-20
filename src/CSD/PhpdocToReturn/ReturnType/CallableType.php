@@ -1,19 +1,21 @@
 <?php
-
 namespace CSD\PhpdocToReturn\ReturnType;
 
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ */
 class CallableType implements ReturnTypeInterface
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function getDeclaration()
+    public function getDeclaration($hack)
     {
         return 'callable';
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isDocCommentRedundant()
     {

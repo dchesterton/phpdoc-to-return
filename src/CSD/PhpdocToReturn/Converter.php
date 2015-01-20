@@ -3,6 +3,9 @@ namespace CSD\PhpdocToReturn;
 
 use CSD\PhpdocToReturn\ReturnType\ArrayType;
 
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ */
 class Converter
 {
     /**
@@ -15,6 +18,16 @@ class Converter
      */
     private $removeRedundantDocComments = true;
 
+    /**
+     * @var bool
+     */
+    private $hack = false;
+
+    /**
+     * @param Func $function
+     *
+     * @return bool
+     */
     public function shouldWriteReturnType(Func $function)
     {
         $name = $function->getReflection()->getName();
@@ -31,7 +44,7 @@ class Converter
 
         $type = $declaration->getType();
 
-        if ($type && $type->getDeclaration()) {
+        if ($type && $type->getDeclaration($this->hack)) {
             if ($type instanceof ArrayType && $type->getType()) {
                 return $this->writeObjectArrayReturnType;
             }
@@ -42,6 +55,9 @@ class Converter
         return false;
     }
 
+    /**
+     * @param File $file
+     */
     public function convert(File $file)
     {
         foreach ($file->getFunctions() as $function) {
@@ -49,20 +65,26 @@ class Converter
         }
     }
 
+    /**
+     * @param Func $function
+     */
     private function convertFunction(Func $function)
     {
         if (!$this->shouldWriteReturnType($function)) {
-            return false;
+            return;
         }
 
         $returnDeclaration = $function->getReturnDeclaration();
 
-        if (!$returnDeclaration) {
-            return false;
+        $returnType = $returnDeclaration->getType();
+
+        $declaration = $returnType->getDeclaration($this->hack);
+
+        if (!$declaration) {
+            return;
         }
 
-        $returnType = $returnDeclaration->getType();
-        $declaration = ': ' . $returnType->getDeclaration();
+        $declaration = ': ' . $declaration;
 
         $file = $function->getFile();
 
@@ -113,7 +135,7 @@ class Converter
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getWriteObjectArrayReturnType()
     {
@@ -121,7 +143,7 @@ class Converter
     }
 
     /**
-     * @param boolean $writeObjectArrayReturnType
+     * @param bool $writeObjectArrayReturnType
      *
      * @return $this
      */
@@ -132,7 +154,7 @@ class Converter
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getRemoveRedundantDocComments()
     {
@@ -140,13 +162,32 @@ class Converter
     }
 
     /**
-     * @param boolean $removeRedundantDocComments
+     * @param bool $removeRedundantDocComments
      *
      * @return $this
      */
     public function setRemoveRedundantDocComments($removeRedundantDocComments)
     {
         $this->removeRedundantDocComments = $removeRedundantDocComments;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHack()
+    {
+        return $this->hack;
+    }
+
+    /**
+     * @param bool $hack
+     *
+     * @return $this
+     */
+    public function setHack($hack)
+    {
+        $this->hack = $hack;
         return $this;
     }
 }

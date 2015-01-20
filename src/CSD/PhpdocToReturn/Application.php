@@ -1,9 +1,9 @@
 <?php
-
 namespace CSD\PhpdocToReturn;
 
-use CSD\PhpdocToReturn\Converter;
-
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ */
 class Application
 {
     /**
@@ -63,6 +63,31 @@ class Application
         return $this->destinationFolder;
     }
 
+    /**
+     * @param bool $writeObjectArrayReturnType
+     *
+     * @return $this
+     */
+    public function setWriteObjectArrayReturnType($writeObjectArrayReturnType)
+    {
+        $this->writeObjectArrayReturnType = $writeObjectArrayReturnType;
+        return $this;
+    }
+
+    /**
+     * @param bool $removeRedundantDocComments
+     *
+     * @return $this
+     */
+    public function setRemoveRedundantDocComments($removeRedundantDocComments)
+    {
+        $this->removeRedundantDocComments = $removeRedundantDocComments;
+        return $this;
+    }
+
+    /**
+     * Run the application to convert files.
+     */
     public function run()
     {
         $converter = new Converter;
@@ -70,13 +95,13 @@ class Application
         $converter->setWriteObjectArrayReturnType($this->writeObjectArrayReturnType);
 
         foreach ($this->getIterator() as $fileinfo) {
-            $filename = $fileinfo[0];
+            $fileName = $fileinfo[0];
 
-            $file = new File($filename);
+            $file = new File($fileName);
             $converter->convert($file);
 
-            if (0 === strpos($filename, $this->sourceFolder)) {
-                $path = substr($filename, strlen($this->sourceFolder));
+            if (0 === strpos($fileName, $this->sourceFolder)) {
+                $path = substr($fileName, strlen($this->sourceFolder));
 
                 $destinationFile = $this->destinationFolder . $path;
 
@@ -89,35 +114,5 @@ class Application
                 file_put_contents($destinationFile, $file->getCode());
             }
         }
-    }
-
-    /**
-     * @param boolean $writeObjectArrayReturnType
-     *
-     * @return $this
-     */
-    public function setWriteObjectArrayReturnType($writeObjectArrayReturnType)
-    {
-        $this->writeObjectArrayReturnType = $writeObjectArrayReturnType;
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getRemoveRedundantDocComments()
-    {
-        return $this->removeRedundantDocComments;
-    }
-
-    /**
-     * @param boolean $removeRedundantDocComments
-     *
-     * @return $this
-     */
-    public function setRemoveRedundantDocComments($removeRedundantDocComments)
-    {
-        $this->removeRedundantDocComments = $removeRedundantDocComments;
-        return $this;
     }
 }

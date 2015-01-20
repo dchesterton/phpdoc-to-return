@@ -1,6 +1,9 @@
 <?php
 namespace CSD\PhpdocToReturn;
 
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ */
 class Func
 {
     /**
@@ -44,14 +47,6 @@ class Func
         }
 
         return $this->returnDeclaration;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasReturnDoc()
-    {
-        return (bool) $this->getReturnDeclaration();
     }
 
     /**

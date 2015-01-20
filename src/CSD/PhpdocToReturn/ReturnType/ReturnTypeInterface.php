@@ -1,15 +1,23 @@
 <?php
-
 namespace CSD\PhpdocToReturn\ReturnType;
 
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ */
 interface ReturnTypeInterface
 {
     /**
-     * @return string
+     * Return the PHP Return Type code.
+     *
+     * @param bool $hack
+     *
+     * @return string|false
      */
-    public function getDeclaration();
+    public function getDeclaration($hack);
 
     /**
+     * Is the doc comment redundant if this return type is added?
+     *
      * @return bool
      */
     public function isDocCommentRedundant();

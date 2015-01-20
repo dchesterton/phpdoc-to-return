@@ -35,12 +35,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
     public function testFunctionWithUnsupportedTypes()
     {
-        $types = [
-            'string', 'int', 'integer', 'float', 'bool', 'boolean', 'resource', 'null',
-            'true', 'false', 'void', 'null', 'mixed', 'object'
-        ];
-
-        foreach ($types as $type) {
+        foreach (['null', 'object'] as $type) {
             $reflection = new \ReflectionFunction('CSD\PhpdocToReturn\Tests\function_' . $type);
             $this->assertFalse($this->parser->parseDocComment($reflection));
         }
@@ -59,7 +54,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $type = $decl->getType();
 
         $this->assertNull($type->getType());
-        $this->assertTrue($decl->getType()->isDocCommentRedundant());
+        $this->assertTrue($type->isDocCommentRedundant());
+        $this->assertEquals('array', $type->getDeclaration(false));
+        $this->assertEquals('array', $type->getDeclaration(true));
     }
 
     public function testFunctionWhichReturnsArrayOfObjects()
@@ -75,7 +72,9 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $type = $decl->getType();
 
         $this->assertEquals('\DateTime', $type->getType());
-        $this->assertFalse($decl->getType()->isDocCommentRedundant());
+        $this->assertFalse($type->isDocCommentRedundant());
+        $this->assertEquals('array', $type->getDeclaration(false));
+        $this->assertEquals('array<\DateTime>', $type->getDeclaration(true));
     }
 
     public function testFunctionWithReturnClass()
@@ -112,6 +111,45 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->parser->parseDocComment($reflection));
     }
 
+    public function testFunctionWhichReturnsScalar()
+    {
+        foreach (['string', 'mixed', 'void', 'float', 'resource'] as $scalar) {
+            $reflection = new \ReflectionFunction('CSD\PhpdocToReturn\Tests\function_' . $scalar);
+
+            $decl = $this->parser->parseDocComment($reflection);
+
+            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ScalarType', $decl->getType());
+
+            $this->assertEquals($scalar, $decl->getType()->getScalar());
+        }
+    }
+
+    public function testFunctionWhichReturnsBool()
+    {
+        foreach (['bool', 'boolean'] as $type) {
+            $reflection = new \ReflectionFunction('CSD\PhpdocToReturn\Tests\function_' . $type);
+
+            $decl = $this->parser->parseDocComment($reflection);
+
+            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ScalarType', $decl->getType());
+        }
+    }
+
+    public function testFunctionWhichReturnsInt()
+    {
+        foreach (['int', 'integer'] as $type) {
+            $reflection = new \ReflectionFunction('CSD\PhpdocToReturn\Tests\function_' . $type);
+
+            $decl = $this->parser->parseDocComment($reflection);
+
+            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+            $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ScalarType', $decl->getType());
+            $this->assertEquals('int', $decl->getType()->getScalar());
+        }
+    }
+
     public function testMethodNoComment()
     {
         $reflection = new \ReflectionMethod('CSD\PhpdocToReturn\Tests\TestClass', 'noComment');
@@ -145,7 +183,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
-        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration());
+        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
         $this->assertEquals('The current date and time', $decl->getComment());
     }
 
@@ -157,7 +195,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
-        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration());
+        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
         $this->assertEquals('The current date and time', $decl->getComment());
     }
 
@@ -169,13 +207,20 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
-        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration());
+        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
         $this->assertEquals('The current date and time', $decl->getComment());
     }
 
     public function testMethodWithInheritDocAndNoParentReturn()
     {
         $reflection = new \ReflectionMethod('CSD\PhpdocToReturn\Tests\ExtendedTestClass', 'noComment');
+
+        $this->assertFalse($this->parser->parseDocComment($reflection));
+    }
+
+    public function testMethodWithInheritDocAndNoParentMethod()
+    {
+        $reflection = new \ReflectionMethod('CSD\PhpdocToReturn\Tests\ExtendedFurtherTestClass', 'methodWithNoParentMethod');
 
         $this->assertFalse($this->parser->parseDocComment($reflection));
     }
@@ -187,11 +232,15 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->parser->parseDocComment($reflection));
     }
 
-    public function testMethodWhichReturnsUnsupportedType()
+    public function testMethodWhichReturnsInt()
     {
         $reflection = new \ReflectionMethod('CSD\PhpdocToReturn\Tests\TestClass', 'returnInt');
 
-        $this->assertFalse($this->parser->parseDocComment($reflection));
+        $decl = $this->parser->parseDocComment($reflection);
+
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
+        $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ScalarType', $decl->getType());
+        $this->assertEquals('int', $decl->getType()->getScalar());
     }
 
     public function testMethodWhichReturnsThis()
@@ -202,6 +251,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ThisType', $decl->getType());
+        $this->assertEquals('self', $decl->getType()->getDeclaration(false));
+        $this->assertEquals('this', $decl->getType()->getDeclaration(true));
     }
 
     public function testMethodWhichReturnsSelf()
@@ -229,7 +280,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
-        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration());
+        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
     }
 
     public function testExtendedInterfaceMethodWhichReturnsClass()
@@ -240,7 +291,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
-        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration());
+        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
     }
 
     public function testClassWithInterfaceMethodWithNoComment()
@@ -258,7 +309,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnDeclaration', $decl);
         $this->assertInstanceOf('CSD\PhpdocToReturn\ReturnType\ClassType', $decl->getType());
-        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration());
+        $this->assertEquals('\DateTime', $decl->getType()->getDeclaration(false));
     }
 }
 
@@ -350,8 +401,8 @@ class ExtendedTestClass extends TestClass
     /**
      * {@inheritdoc}
      */
-    public function returnClassWithComment() {
-    }
+    public function returnClassWithComment()
+    {}
 
     /**
      * {@InheritDoc}
@@ -373,8 +424,14 @@ class ExtendedFurtherTestClass extends ExtendedTestClass
     /**
      * {@inheritdoc}
      */
-    public function returnClassWithComment() {
-    }
+    public function returnClassWithComment()
+    {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function methodWithNoParentMethod()
+    {}
 }
 
 function function_no_comment()
@@ -447,7 +504,7 @@ function function_null()
 {}
 
 /**
- * @return null
+ * @return void
  */
 function function_void()
 {}

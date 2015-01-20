@@ -4,19 +4,19 @@ namespace CSD\PhpdocToReturn\ReturnType;
 /**
  * @author Daniel Chesterton <daniel@chestertondevelopment.com>
  */
-class ClassType implements ReturnTypeInterface
+class ScalarType implements ReturnTypeInterface
 {
     /**
      * @var string
      */
-    private $className;
+    private $scalar;
 
     /**
-     * @param string $className
+     * @param string $scalar
      */
-    public function __construct($className)
+    public function __construct($scalar)
     {
-        $this->className = $className;
+        $this->scalar = $scalar;
     }
 
     /**
@@ -24,7 +24,7 @@ class ClassType implements ReturnTypeInterface
      */
     public function getDeclaration($hack)
     {
-        return $this->className;
+        return $hack? $this->scalar: false;
     }
 
     /**
@@ -33,5 +33,13 @@ class ClassType implements ReturnTypeInterface
     public function isDocCommentRedundant()
     {
         return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getScalar()
+    {
+        return $this->scalar;
     }
 }

@@ -1,7 +1,9 @@
 <?php
-
 namespace CSD\PhpdocToReturn\ReturnType;
 
+/**
+ * @author Daniel Chesterton <daniel@chestertondevelopment.com>
+ */
 class ArrayType implements ReturnTypeInterface
 {
     /**
@@ -26,15 +28,19 @@ class ArrayType implements ReturnTypeInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function getDeclaration()
+    public function getDeclaration($hack)
     {
+        if ($hack && $this->type) {
+            return sprintf('array<%s>', $this->type);
+        }
+
         return 'array';
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
     public function isDocCommentRedundant()
     {
