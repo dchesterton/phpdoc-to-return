@@ -1,5 +1,7 @@
 {
     "name": "dchesterton/phpdoc-to-return",
+    "description": "Convert PHPDoc @return hints to PHP7/Hack native return type syntax",
+    "license": "MIT",
     "authors": [
         {
             "name": "Daniel Chesterton",
